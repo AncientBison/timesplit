@@ -5,7 +5,15 @@ import GoogleIcon from "@icons/googleIcon";
 
 export default function LoginButton() {
   return (
-    <Button size="lg" onClick={() => signIn("google")}>
+    <Button
+      size="lg"
+      onClick={() =>
+        signIn("google", {
+          redirect: true,
+          redirectTo: "/planner",
+        })
+      }
+    >
       <GoogleIcon size={64} /> <p className="text-xl">Login with Google</p>
     </Button>
   );

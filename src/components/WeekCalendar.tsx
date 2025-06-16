@@ -44,7 +44,7 @@ export default function WeekCalendar() {
             <div className="flex h-11/12 flex-row items-center justify-between p-4">
                 {getDaysOfWeek(selectedWeekOffset).map((day, index) => (
                     <div key={day.getTime()} className="bg-white rounded-lg shadow w-1/7 m-1 h-full">
-                        <div className={`h-1/9 rounded-tl-lg rounded-tr-lg flex flex-col items-center m-0 ${day.getDate() === new Date().getDate() ? "bg-blue-300" : ""}`}>
+                        <div className={`h-1/9 rounded-tl-lg rounded-tr-lg flex flex-col items-center m-0 ${day.getDate() === new Date().getDate() && day.getMonth() === new Date().getMonth() ? "bg-blue-300" : ""}`}>
                             <div className="flex flex-col items-center justify-center h-full">
                                 <span className="text-lg font-semibold">{day.toLocaleDateString('en-US', { weekday: 'long' })}</span>
                                 <span className="text-sm text-gray-600">{day.toLocaleDateString()}</span>

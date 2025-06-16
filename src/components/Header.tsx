@@ -10,7 +10,7 @@ import {
 
 export default function Header() {
   return (
-    <header className="bg-background border-b">
+    <header className="bg-background border-b fixed top-0 z-50 w-full shadow-sm">
       <div className="container flex min-w-full items-center justify-between px-4 py-4">
         <Link href="/" className="text-2xl font-bold">
           TimeSplit

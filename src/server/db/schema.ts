@@ -1,6 +1,7 @@
 import { relations, sql } from "drizzle-orm";
-import { index, pgTableCreator, primaryKey } from "drizzle-orm/pg-core";
+import { index, pgTableCreator, pgEnum, primaryKey } from "drizzle-orm/pg-core";
 import { type AdapterAccount } from "next-auth/adapters";
+import { TASK_COLORS } from "~/lib/taskColors";
 
 /**
  * This is an example of how to use the multi-project schema feature of Drizzle ORM. Use the same
@@ -10,26 +11,54 @@ import { type AdapterAccount } from "next-auth/adapters";
  */
 export const createTable = pgTableCreator((name) => `timesplit_${name}`);
 
-export const posts = createTable(
-  "post",
-  (d) => ({
-    id: d.integer().primaryKey().generatedByDefaultAsIdentity(),
-    name: d.varchar({ length: 256 }),
-    createdById: d
+export const taskModeEnum = pgEnum("task_mode", ["all-at-once", "incremental"]);
+
+export const colorsEnum = pgEnum("color", TASK_COLORS);
+
+export const tasks = createTable("task", (d) => ({
+  id: d
+    .varchar({ length: 255 })
+    .notNull()
+    .primaryKey()
+    .$defaultFn(() => crypto.randomUUID()),
+  title: d.varchar({ length: 255 }).notNull(),
+  dueDate: d.timestamp({ mode: "date", withTimezone: true }).notNull(),
+  totalMinutesToComplete: d.integer().notNull(),
+  minutesCompleted: d.integer().notNull().default(0),
+  mode: taskModeEnum("task_mode").notNull(),
+  colorHex: colorsEnum("color").notNull(),
+  userId: d
       .varchar({ length: 255 })
       .notNull()
       .references(() => users.id),
-    createdAt: d
-      .timestamp({ withTimezone: true })
-      .default(sql`CURRENT_TIMESTAMP`)
-      .notNull(),
-    updatedAt: d.timestamp({ withTimezone: true }).$onUpdate(() => new Date()),
-  }),
-  (t) => [
-    index("created_by_idx").on(t.createdById),
-    index("name_idx").on(t.name),
-  ],
-);
+}));
+
+export const tasksRelations = relations(tasks, ({ one }) => ({
+  user: one(users)
+}));
+
+export const completedChunks = createTable("completedChunks", (d) => ({
+  id: d
+    .varchar({ length: 255 })
+    .notNull()
+    .primaryKey()
+    .$defaultFn(() => crypto.randomUUID()),
+  taskId: d
+    .varchar({ length: 225 })
+    .notNull()
+    .references(() => tasks.id),
+  userId: d
+    .varchar({ length: 255 })
+    .notNull()
+    .references(() => users.id),
+  date: d.timestamp({ mode: "date", withTimezone: true }).notNull(),
+  durationMinutes: d.integer().notNull(),
+}));
+
+export const completedChunksRelations = relations(completedChunks, ({ one }) => ({
+  task: one(tasks),
+  user: one(users),
+}));
 
 export const users = createTable("user", (d) => ({
   id: d
@@ -50,6 +79,7 @@ export const users = createTable("user", (d) => ({
 
 export const usersRelations = relations(users, ({ many }) => ({
   accounts: many(accounts),
+  tasks: many(tasks),
 }));
 
 export const accounts = createTable(

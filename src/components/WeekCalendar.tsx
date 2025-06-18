@@ -142,8 +142,8 @@ export function ChunkBlock({ chunk, chunkHeight, complete }: { chunk: Chunk; chu
                 <ConfirmationDialog
                     title="Mark as Complete"
                     description="Mark this chunk of your task as complete"
-                    onConfirm={() => {
-                        completeChunk(chunk);
+                    onConfirm={async () => {
+                        await completeChunk(chunk);
                     }}
                 >
                     <Button

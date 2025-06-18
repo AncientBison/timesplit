@@ -37,7 +37,7 @@ export default function ConfirmationDialog({
   return (
     <Dialog open={open} onOpenChange={setOpen}>
       <DialogTrigger asChild>
-        {children || <Button variant="destructive">{triggerText}</Button>}
+        {children ?? <Button variant="destructive">{triggerText}</Button>}
       </DialogTrigger>
       <DialogContent>
         <DialogHeader>

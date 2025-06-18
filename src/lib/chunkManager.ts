@@ -47,7 +47,7 @@ export function makeChunks(tasks: Task[], completedChunks: Chunk[]): Chunk[] {
                 continue;
             }
             
-            let priorityTask = chunks.find(chunk =>
+            const priorityTask = chunks.find(chunk =>
                 chunk.date.getTime() === date.getTime() &&
                 chunk.task.mode === "all-at-once" &&
                 chunk.durationMinutes < chunk.task.totalMinutesToComplete

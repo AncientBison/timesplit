@@ -164,9 +164,9 @@ export default function TaskForm({ task, closeTaskForm }: TaskFormProps) {
       <div className="flex flex-row gap-2">
         <Button
           className="h-11"
-          onClick={() => {
+          onClick={async () => {
             if (isEditing) {
-              editTask({
+              await editTask({
                 id: task.id,
                 title: taskTitle,
                 dueDate: dueDate,
@@ -176,7 +176,7 @@ export default function TaskForm({ task, closeTaskForm }: TaskFormProps) {
                 colorHex: taskColor,
               });
             } else {
-              createTask({
+              await createTask({
                 title: taskTitle,
                 dueDate: dueDate,
                 totalMinutesToComplete: totalMinutesToComplete,
@@ -194,8 +194,8 @@ export default function TaskForm({ task, closeTaskForm }: TaskFormProps) {
         </Button>
         {isEditing && (
           <ConfirmationDialog
-            onConfirm={() => {
-                removeTask(task);
+            onConfirm={async () => {
+                await removeTask(task);
                 closeTaskForm();
             }}
             title="Delete Task"

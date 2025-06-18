@@ -32,8 +32,8 @@ export default function Header() {
             </NavigationMenuItem>
           </NavigationMenuList>
         </NavigationMenu>
-        <Button onClick={() => {
-          signOut({ callbackUrl: "/" })
+        <Button onClick={async () => {
+          await signOut({ callbackUrl: "/" })
         }}>
           Log Out
         </Button>

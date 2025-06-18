@@ -1,6 +1,5 @@
 "use client";
 
-import { useMemo } from 'react';
 import type { Chunk } from '~/lib/chunkManager';
 import { ChunkBlock } from './WeekCalendar';
 import useTaskManager from '~/lib/useTaskManager';
@@ -10,7 +9,7 @@ export default function CompletedChunksDisplay() {
 
   const getSortedColumnChunks = () => {
     const columnHeights: number[] = Array(7).fill(0);
-    const columnChunks: Chunk[][] = [[], [], [], [], [], [], []];
+    const columnChunks: Chunk[][] = [[] as Chunk[], [] as Chunk[], [] as Chunk[], [] as Chunk[], [] as Chunk[], [] as Chunk[], [] as Chunk[]];
 
     for (const completedChunk of completedChunks.sort((a, b) => (a.date.getTime() - b.date.getTime()))) {
 

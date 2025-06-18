@@ -147,7 +147,7 @@ export default async function HomePage() {
             <div className="bg-gradient-to-br from-blue-500/20 to-purple-500/20 rounded-2xl p-8 border border-white/10">
               <h3 className="text-2xl font-bold mb-4">Ready to get organized?</h3>
               <p className="text-gray-300 mb-6">
-                Transform your productivity today with TimeSplit's intelligent scheduling.
+                {"Transform your productivity today with TimeSplit\'s intelligent scheduling."}
               </p>
               {!session ? (
                 <LoginButton />

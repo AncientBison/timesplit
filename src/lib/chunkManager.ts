@@ -70,12 +70,8 @@ export function makeChunks(tasks: Task[], completedChunks: Chunk[]): Chunk[] {
                 const priorityB = algorithm1(b, chunks, date);
 
                 const aHasCompleted = completedChunks.some(chunk => chunk.date.toString() === date.toString() && chunk.task.id === a.id);
-                console.log(date, completedChunks.map(chunk => chunk.date))
                 const bHasCompleted = completedChunks.some(chunk => chunk.date.toString() === date.toString() && chunk.task.id === b.id);
                 
-
-                // console.log(aHasCompleted, bHasCompleted)
-
                 if (aHasCompleted && !bHasCompleted) return 1;
                 if (bHasCompleted && !aHasCompleted) return -1;
 

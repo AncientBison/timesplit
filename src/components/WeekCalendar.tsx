@@ -111,37 +111,50 @@ function DayOfWeekChunks({ day }: { day: Date }) {
     );
 }
 
-function ChunkBlock({ chunk, chunkHeight }: { chunk: Chunk, chunkHeight: number}) {
+export function ChunkBlock({ chunk, chunkHeight, complete }: { chunk: Chunk; chunkHeight: number, complete?: boolean }) {
     const { completeChunk } = useTaskManager();
 
     return (
         <div
+            className="chunk-block w-full group rounded-lg flex flex-col p-2 relative"
             style={{
                 height: `${chunkHeight}%`,
                 backgroundColor: chunk.task.colorHex,
-                boxShadow: `0 0 0 2px ${chunk.task.colorHex}80`
+                boxShadow: `0 0 0 2px ${chunk.task.colorHex}80`,
             }}
-            className={`w-full group rounded-lg flex flex-col p-2 relative`}
         >
             <div className="flex-1 flex items-center justify-center flex-col">
-                <div>
-                    {chunk.task.title}
-                </div>
+                <div>{chunk.task.title}</div>
                 <div className="flex w-full justify-center items-center flex-col">
-                    {Math.floor(chunk.durationMinutes / 60).toString().padStart(2, "0")}:{(chunk.durationMinutes % 60).toString().padStart(2, "0")}
+                    {Math.floor(chunk.durationMinutes / 60)
+                        .toString()
+                        .padStart(2, "0")}
+                    :
+                    {(chunk.durationMinutes % 60).toString().padStart(2, "0")}
                 </div>
+                {complete && (
+                    <div className="flex w-full justify-center items-center flex-col">
+                        Finished {chunk.date.toLocaleDateString()}
+                    </div>
+                )}
             </div>
-            <ConfirmationDialog title="Mark as Complete" description="Mark this chunk of your task as complete"  onConfirm={() => {
-                completeChunk(chunk);
-            }}>
-                <Button
-                    variant="secondary"
-                    size="sm"
-                    className="opacity-0 group-hover:opacity-100 transition-opacity w-full"
+            {!complete && (
+                <ConfirmationDialog
+                    title="Mark as Complete"
+                    description="Mark this chunk of your task as complete"
+                    onConfirm={() => {
+                        completeChunk(chunk);
+                    }}
                 >
-                    Done
-                </Button>
-            </ConfirmationDialog>
+                    <Button
+                        variant="secondary"
+                        size="sm"
+                        className="opacity-0 group-hover:opacity-100 transition-opacity w-full"
+                    >
+                        Done
+                    </Button>
+                </ConfirmationDialog>
+            )}
         </div>
     );
 }

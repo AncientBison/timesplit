@@ -57,6 +57,7 @@ export async function getCompletedChunksFromDB() {
                 dueDate: tasks.dueDate,
                 minutesCompleted: tasks.minutesCompleted,
                 totalMinutesToComplete: tasks.totalMinutesToComplete,
+                colorHex: tasks.colorHex,
                 mode: tasks.mode
             }
         })

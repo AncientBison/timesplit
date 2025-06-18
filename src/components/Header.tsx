@@ -3,10 +3,9 @@ import { Button } from "@ui/button";
 import {
   NavigationMenu,
   NavigationMenuItem,
-  NavigationMenuLink,
   NavigationMenuList,
-  navigationMenuTriggerStyle,
 } from "@ui/navigation-menu";
+import { signOut } from "next-auth/react";
 
 export default function Header() {
   return (
@@ -33,6 +32,11 @@ export default function Header() {
             </NavigationMenuItem>
           </NavigationMenuList>
         </NavigationMenu>
+        <Button onClick={() => {
+          signOut({ callbackUrl: "/" })
+        }}>
+          Log Out
+        </Button>
       </div>
     </header>
   );

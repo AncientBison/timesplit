@@ -25,9 +25,9 @@ type TasksContext = {
 
 const TaskContextsInstance = createContext<TasksContext>({
   tasks: [],
-  setTasks: () => {}, // No-op function to avoid ESLint empty function warning
+  setTasks: () => {}, // eslint-disable-line @typescript-eslint/no-empty-function
   completedChunks: [],
-  setCompletedChunks: () => {}, // No-op function to avoid ESLint empty function warning
+  setCompletedChunks: () => {}, // eslint-disable-line @typescript-eslint/no-empty-function
 });
 
 export function TasksProvider({ children, tasksFromDB, completedChunksFromDB }: { children: React.ReactNode, tasksFromDB: Task[], completedChunksFromDB: Chunk[] }) {

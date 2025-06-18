@@ -8,7 +8,7 @@ export default function CompletedChunksDisplay() {
   const { completedChunks } = useTaskManager();
 
   const getSortedColumnChunks = () => {
-    const columnHeights: number[] = Array(7).fill(0);
+    const columnHeights: number[] = [0, 0, 0, 0, 0, 0, 0];
     const columnChunks: Chunk[][] = [[] as Chunk[], [] as Chunk[], [] as Chunk[], [] as Chunk[], [] as Chunk[], [] as Chunk[], [] as Chunk[]];
 
     for (const completedChunk of completedChunks.sort((a, b) => (a.date.getTime() - b.date.getTime()))) {

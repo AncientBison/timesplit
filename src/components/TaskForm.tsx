@@ -14,15 +14,6 @@ import {
 } from "@components/ui/toggle-group";
 import type { Color } from "~/lib/taskColors";
 import { ColorPicker } from "./ui/colorPicker";
-import {
-  Dialog,
-  DialogContent,
-  DialogDescription,
-  DialogFooter,
-  DialogHeader,
-  DialogTitle,
-  DialogTrigger,
-} from "@components/ui/dialog";
 import ConfirmationDialog from "./ConfirmationDialog";
 
 interface TaskFormProps {

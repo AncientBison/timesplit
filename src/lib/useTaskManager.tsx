@@ -42,7 +42,6 @@ export function TasksProvider({ children, tasksFromDB, completedChunksFromDB }: 
 }
 
 export default function useTaskManager() {
-    "use client";
     const { tasks, setTasks, completedChunks, setCompletedChunks } = useContext(TaskContextsInstance);
 
     const createTask = async (task: Task) => {
@@ -73,7 +72,7 @@ export default function useTaskManager() {
                         : t
                 )
             );
-            setCompletedChunks(prevChunks => [...prevChunks, chunk]);
+            setCompletedChunks(prevChunks => [...prevChunks, { ...chunk, id }]);
         }
     }
 

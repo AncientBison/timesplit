@@ -32,10 +32,10 @@ export async function removeTaskFromDB(taskID: string) {
     if (!session) {
         throw new Error("User not authenticated");
     }
-    
-    await db.delete(tasks).where(eq(tasks.id, taskID));
 
     await db.delete(completedChunks).where(eq(completedChunks.taskId, taskID));
+
+    await db.delete(tasks).where(eq(tasks.id, taskID));
 }
 
 export async function editTaskOnDB(task: Task) {

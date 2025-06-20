@@ -15,6 +15,7 @@ import {
 import type { Color } from "~/lib/taskColors";
 import { ColorPicker } from "./ui/colorPicker";
 import ConfirmationDialog from "./ConfirmationDialog";
+import { HoverCard, HoverCardContent, HoverCardTrigger } from "./ui/hover-card";
 
 interface TaskFormProps {
   task?: Task;
@@ -123,29 +124,34 @@ export default function TaskForm({ task, closeTaskForm }: TaskFormProps) {
       <div className="w-full flex flex-row items-center justify-between flex-wrap">
         <div className="min-w-1/2">
           <Label>Split Mode</Label>
-          <ToggleGroup
-            variant="outline"
-            type="single"
-            className="bg-gray-100"
-            value={mode}
-            onValueChange={(e) => {
-              if (e && !hasTimeCompleted) setMode(e as "incremental" | "all-at-once");
-            }}
-            disabled={hasTimeCompleted}
-          >
-            <ToggleGroupItem value="incremental" className="data-[state=on]:bg-white">
-              Incremental
-            </ToggleGroupItem>
-            <ToggleGroupItem value="all-at-once" className="data-[state=on]:bg-white">
-              All at once
-            </ToggleGroupItem>
-          </ToggleGroup>
-          {hasTimeCompleted && (
-            <Alert className="mt-2">
-              <AlertCircleIcon />
-              <AlertTitle>Cannot change mode with completed chunks</AlertTitle>
-            </Alert>
-          )}
+          <HoverCard>
+            <HoverCardTrigger>
+              <ToggleGroup
+                variant="outline"
+                type="single"
+                className="bg-gray-100"
+                value={mode}
+                onValueChange={(e) => {
+                  if (e && !hasTimeCompleted) setMode(e as "incremental" | "all-at-once");
+                }}
+                disabled={hasTimeCompleted}
+              >
+                <ToggleGroupItem value="incremental" className="data-[state=on]:bg-white">
+                  Incremental
+                </ToggleGroupItem>
+                <ToggleGroupItem value="all-at-once" className="data-[state=on]:bg-white">
+                  All at once
+                </ToggleGroupItem>
+              </ToggleGroup>
+            </HoverCardTrigger>
+            <HoverCardContent>
+              {hasTimeCompleted && (
+                <>
+                  Cannot change mode with chunks already completed
+                </>
+              )}
+            </HoverCardContent>
+          </HoverCard>
         </div>
         <div className="w-1/2">
           <Label>Color</Label>

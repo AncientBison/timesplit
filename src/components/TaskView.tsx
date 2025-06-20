@@ -64,12 +64,12 @@ function TaskBlock({ task }: { task: Task }) {
                         backgroundColor: task.colorHex,
                         boxShadow: `0 0 0 2px ${task.colorHex}80`
                     }}
-                    className={`w-full min-h-1/10 rounded-lg flex items-center flex-col justify-center p-2`}
+                    className={`w-full h-1/10 rounded-lg flex items-center flex-col justify-center p-2`}
                 >
                     <div>
                         {task.title}
                     </div>
-                    <div className="flex w-full justify-center items-center flex-col">
+                    <div className="flex text-sm w-full justify-center items-center flex-col">
                         Due {task.dueDate.toLocaleDateString()} at {task.dueDate.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit', hour12: true })}
                     </div>
                     

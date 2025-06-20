@@ -36,7 +36,7 @@ export default function CompletedChunksDisplay() {
                 {chunks.map((chunk) => (
                   <div
                     key={chunk.id}
-                    style={{ height: `${chunk.durationMinutes * 10}px` }}
+                    style={{ height: `${chunk.durationMinutes * 5}px` }}
                   >
                     <ChunkBlock chunk={chunk} complete chunkHeight={100} />
                   </div>

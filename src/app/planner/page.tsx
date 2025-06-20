@@ -16,7 +16,7 @@ export default function Page() {
   return (
     <main className="flex min-h-screen h-screen flex-row items-center justify-between">
       <TasksProvider tasksFromDB={tasksFromDB} completedChunksFromDB={completedChunksFromDB}>
-        <div className="w-1/5 h-full">
+        <div className="w-1/5 min-w-[230px] h-full">
           <TaskView />
         </div>
         <div className="w-4/5 h-full overflow-y-auto flex flex-col">

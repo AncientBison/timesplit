@@ -21,7 +21,7 @@ export default function TaskView() {
     }
 
     return (
-        <div className="w-full h-full bg-gray-100">
+        <div className="w-full h-[calc(100%-64px)] bg-gray-100 mt-16 overflow-y-auto">
             {taskCreatorOpen ? (<TaskCreator closeTaskCreator={closeTaskCreator} />) : (
                 <TaskList openTaskCreator={openTaskCreator} />
             )}
@@ -33,7 +33,7 @@ function TaskList({ openTaskCreator }: { openTaskCreator: () => void}) {
     const { tasks } = useTaskManager();
 
     return (
-        <div className="w-full h-full flex overflow-y-auto flex-col gap-2 p-4 pt-26 items-center">
+        <div className="w-full h-full flex flex-col gap-2 p-4 items-center">
             <div className="w-full flex justify-between items-center mb-8">
                 <h1 className="text-2xl">
                     Your Tasks

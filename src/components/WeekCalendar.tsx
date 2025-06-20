@@ -7,6 +7,8 @@ import { MoveLeft, MoveRight } from 'lucide-react';
 import useTaskManager from '~/lib/useTaskManager';
 import { makeChunks, type Chunk } from '~/lib/chunkManager';
 import ConfirmationDialog from './ConfirmationDialog';
+import { HoverCard, HoverCardTrigger } from './ui/hover-card';
+import { HoverCardContent } from '@radix-ui/react-hover-card';
 
 export default function WeekCalendar() {
     // const { isMobile, isTablet, isDesktop, width, height } = useScreenSize();
@@ -49,13 +51,13 @@ export default function WeekCalendar() {
 function NavigationHeader({ selectedWeekOffset, setSelectedWeekOffset }: { selectedWeekOffset: number, setSelectedWeekOffset: (offset: number) => void }) {
     return (
         <div className="h-1/12 rounded-tl-lg rounded-tr-lg flex flex-col items-center flex-row justify-end pt-4 pl-4 pr-4 gap-2">
-            <Button onClick={() => setSelectedWeekOffset(0)} variant="outline" className="h-12 text-xl">
+            <Button onClick={() => setSelectedWeekOffset(0)} variant="outline" className="lg:text-xl md:text-lg sm:text-md lg:h-10 md:h-8 sm:h-6">
                 Today
             </Button>
-            <Button onClick={() => setSelectedWeekOffset(selectedWeekOffset - 1)} variant="outline" size="icon" className="size-12">
+            <Button onClick={() => setSelectedWeekOffset(selectedWeekOffset - 1)} variant="outline" size="icon" className="lg:size-10 md:size-8 sm:size-6">
                 <MoveLeft />
             </Button>
-            <Button onClick={() => setSelectedWeekOffset(selectedWeekOffset + 1)} variant="outline" size="icon" className="size-12">
+            <Button onClick={() => setSelectedWeekOffset(selectedWeekOffset + 1)} variant="outline" size="icon" className="lg:size-10 md:size-8 sm:size-6">
                 <MoveRight />
             </Button>             
         </div>
@@ -75,8 +77,8 @@ function DayOfWeekHeader({ day }: { day: Date }) {
     return (
         <div className={`h-1/9 rounded-tl-lg rounded-tr-lg flex flex-col items-center m-0 ${day.getDate() === new Date().getDate() && day.getMonth() === new Date().getMonth() ? "bg-blue-300" : ""}`}>
             <div className="flex flex-col items-center justify-center h-full">
-                <span className="text-lg font-semibold">{day.toLocaleDateString('en-US', { weekday: 'long' })}</span>
-                <span className="text-sm text-gray-600">{day.toLocaleDateString()}</span>
+                <span className="lg:text-lg md:text-[0.75rem] sm:text-[0.5rem] font-semibold">{day.toLocaleDateString('en-US', { weekday: 'long' })}</span>
+                <span className="lg:text-sm md:text-[0.6rem] sm:text-[0.45rem] text-gray-600">{day.toLocaleDateString()}</span>
             </div>
             <Separator variant="dashed" />
         </div>
@@ -112,19 +114,36 @@ function DayOfWeekChunks({ day }: { day: Date }) {
 }
 
 export function ChunkBlock({ chunk, chunkHeight, complete }: { chunk: Chunk; chunkHeight: number, complete?: boolean }) {
-    const { completeChunk } = useTaskManager();
+    return (
+        <ChunkBlockInner chunk={chunk} chunkHeight={chunkHeight} complete={complete} />
+        // <HoverCard>
+        //     <HoverCardTrigger>
+        //         <ChunkBlockInner chunk={chunk} chunkHeight={chunkHeight} complete={complete} />
+        //     </HoverCardTrigger>
+        //     <HoverCardContent>
+        //         <ChunkBlockInner chunk={chunk} chunkHeight={chunkHeight} complete={complete} noBg />
+        //     </HoverCardContent>
+        // </HoverCard>
+    );
+}
 
+function ChunkBlockInner({ chunk, chunkHeight, complete, noBg }: { chunk: Chunk; chunkHeight: number, complete?: boolean, noBg?: boolean }) {
+    const { completeChunk } = useTaskManager();
+    
     return (
         <div
-            className="chunk-block w-full group rounded-lg flex flex-col p-2 relative"
-            style={{
+            className="overflow-hidden w-full group rounded-lg flex flex-col p-2 relative"
+            style={noBg ? {
+                backgroundColor: "white",
+                border: "2px solid #cdcdcd"
+            } : {
                 height: `${chunkHeight}%`,
                 backgroundColor: chunk.task.colorHex,
                 boxShadow: `0 0 0 2px ${chunk.task.colorHex}80`,
             }}
         >
-            <div className="flex-1 flex items-center justify-center flex-col">
-                <div>{chunk.task.title}</div>
+            <div className="flex-1 flex items-center justify-center flex-col gap-4">
+                <div className="text-center">{chunk.task.title}</div>
                 <div className="flex w-full justify-center items-center flex-col">
                     {Math.floor(chunk.durationMinutes / 60)
                         .toString()
@@ -133,7 +152,7 @@ export function ChunkBlock({ chunk, chunkHeight, complete }: { chunk: Chunk; chu
                     {(chunk.durationMinutes % 60).toString().padStart(2, "0")}
                 </div>
                 {complete && (
-                    <div className="flex w-full justify-center items-center flex-col">
+                    <div className="text-center">
                         Finished {chunk.date.toLocaleDateString()}
                     </div>
                 )}

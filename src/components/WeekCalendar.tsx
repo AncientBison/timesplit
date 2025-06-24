@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import { Separator } from '@ui/separator';
 import { Button } from './ui/button';
 import { MoveLeft, MoveRight } from 'lucide-react';
@@ -66,7 +66,7 @@ function NavigationHeader({ selectedWeekOffset, setSelectedWeekOffset }: { selec
 
 function DayOfWeek({ day }: { day: Date }) {
     return (
-        <div className="bg-white rounded-lg shadow w-1/7 m-1 h-full">
+        <div className="bg-white flex-1 rounded-lg shadow w-1/7 m-1 h-full">
             <DayOfWeekHeader day={day} />
             <DayOfWeekChunks day={day} />
         </div>
@@ -113,34 +113,25 @@ function DayOfWeekChunks({ day }: { day: Date }) {
     );
 }
 
-export function ChunkBlock({ chunk, chunkHeight, complete }: { chunk: Chunk; chunkHeight: number, complete?: boolean }) {
-    return (
-        <ChunkBlockInner chunk={chunk} chunkHeight={chunkHeight} complete={complete} />
-        // <HoverCard>
-        //     <HoverCardTrigger>
-        //         <ChunkBlockInner chunk={chunk} chunkHeight={chunkHeight} complete={complete} />
-        //     </HoverCardTrigger>
-        //     <HoverCardContent>
-        //         <ChunkBlockInner chunk={chunk} chunkHeight={chunkHeight} complete={complete} noBg />
-        //     </HoverCardContent>
-        // </HoverCard>
-    );
-}
-
-function ChunkBlockInner({ chunk, chunkHeight, complete, noBg }: { chunk: Chunk; chunkHeight: number, complete?: boolean, noBg?: boolean }) {
+export function ChunkBlock({ chunk, chunkHeight, complete, noBg }: { chunk: Chunk; chunkHeight: number, complete?: boolean, noBg?: boolean }) {
     const { completeChunk } = useTaskManager();
+
+    const [isHovered, setIsHovered] = useState(false);
     
     return (
         <div
-            className="overflow-hidden w-full group rounded-lg flex flex-col p-2 relative"
+            className="overflow-hidden w-full group rounded-lg flex flex-col relative"
             style={noBg ? {
                 backgroundColor: "white",
-                border: "2px solid #cdcdcd"
+                border: "2px solid #cdcdcd",
             } : {
-                height: `${chunkHeight}%`,
+                height: (isHovered) ? `auto` : `${chunkHeight}%`,
+                minHeight: (isHovered) ? `${chunkHeight}%` : 26,
                 backgroundColor: chunk.task.colorHex,
                 boxShadow: `0 0 0 2px ${chunk.task.colorHex}80`,
             }}
+            onPointerEnter={() => setIsHovered(true)}
+            onPointerLeave={() => setIsHovered(false)}
         >
             <div className="flex-1 flex items-center justify-center flex-col gap-4">
                 <div className="text-center">{chunk.task.title}</div>
@@ -166,7 +157,7 @@ function ChunkBlockInner({ chunk, chunkHeight, complete, noBg }: { chunk: Chunk;
                     }}
                 >
                     <Button
-                        variant="secondary"
+                        variant={noBg ? "default" : "secondary"}
                         size="sm"
                         className="opacity-0 group-hover:opacity-100 transition-opacity w-full"
                     >

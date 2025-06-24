@@ -144,13 +144,11 @@ export default function TaskForm({ task, closeTaskForm }: TaskFormProps) {
                 </ToggleGroupItem>
               </ToggleGroup>
             </HoverCardTrigger>
-            <HoverCardContent>
               {hasTimeCompleted && (
-                <>
+                <HoverCardContent>
                   Cannot change mode with chunks already completed
-                </>
+                </HoverCardContent>
               )}
-            </HoverCardContent>
           </HoverCard>
         </div>
         <div className="w-1/2">

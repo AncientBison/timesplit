@@ -10,6 +10,9 @@ import ConfirmationDialog from './ConfirmationDialog';
 import { HoverCard, HoverCardTrigger } from './ui/hover-card';
 import { HoverCardContent } from '@radix-ui/react-hover-card';
 
+// Animation control constant
+const POP_ANIMATIONS = false;
+
 export default function WeekCalendar() {
     // const { isMobile, isTablet, isDesktop, width, height } = useScreenSize();
 
@@ -66,7 +69,7 @@ function NavigationHeader({ selectedWeekOffset, setSelectedWeekOffset }: { selec
 
 function DayOfWeek({ day }: { day: Date }) {
     return (
-        <div className="bg-white flex-1 rounded-lg shadow w-1/7 min-h-[calc(70vh-6rem)] flex flex-col">
+        <div className="bg-white flex-1 rounded-lg shadow w-1/7 min-h-[calc(56vh)] flex flex-col">
             <DayOfWeekHeader day={day} />
             <DayOfWeekChunks day={day} />
         </div>
@@ -91,24 +94,22 @@ function DayOfWeekChunks({ day }: { day: Date }) {
 
     day.setHours(0, 0, 0, 0); // Normalize the date to midnight for comparison
 
+    const dayChunks = chunks.filter(chunk => {
+        const chunkDate = new Date(chunk.date);
+        return chunkDate.getTime() === day.getTime();
+    });
+
+    const totalDayMinutes = dayChunks.reduce((sum, c) => sum + c.durationMinutes, 0);
+
     return (
         <div className="flex flex-col gap-1 p-2 flex-1">
-            {chunks.filter(chunk => {
-                const chunkDate = new Date(chunk.date);
-                return chunkDate.getTime() === day.getTime();
-            }).map(chunk => (
-                <ChunkBlock key={chunk.task.id} chunk={chunk} chunkHeight={
-                    (chunk.durationMinutes /
-                        chunks
-                            .filter(c => {
-                                const chunkDate = new Date(c.date);
-                                return chunkDate.getTime() === day.getTime();
-                            })
-                            .reduce((sum, c) => sum + c.durationMinutes, 0)
-                    ) * 100
-                }/>
-            ))
-            }
+            {dayChunks.map(chunk => (
+                <ChunkBlock 
+                    key={chunk.task.id} 
+                    chunk={chunk} 
+                    chunkHeight={totalDayMinutes > 0 ? (chunk.durationMinutes / totalDayMinutes) : 0}
+                />
+            ))}
         </div>
     );
 }
@@ -117,18 +118,107 @@ export function ChunkBlock({ chunk, chunkHeight, complete, noBg }: { chunk: Chun
     const { completeChunk } = useTaskManager();
 
     const [isHovered, setIsHovered] = useState(false);
+    const [animationState, setAnimationState] = useState<'idle' | 'popping' | 'shrinking' | 'removing'>('idle');
+    const [shouldRemove, setShouldRemove] = useState(false);
     
+    // Handle the complete animation sequence
+    const handleComplete = async () => {
+        // Check if animations are disabled
+        if (!POP_ANIMATIONS) {
+            await completeChunk(chunk);
+            return;
+        }
+
+        // Check for reduced motion preference
+        const prefersReducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+        
+        if (prefersReducedMotion) {
+            // Skip animation, complete immediately
+            await completeChunk(chunk);
+            return;
+        }
+
+        // Add haptic feedback if supported
+        if ('vibrate' in navigator) {
+            navigator.vibrate(50);
+        }
+
+        // Start pop animation
+        setAnimationState('popping');
+        
+        // After pop, start shrinking
+        setTimeout(() => {
+            setAnimationState('shrinking');
+        }, 100); // 200ms pop + 100ms hold
+        
+        // After shrink, mark for removal and complete the chunk
+        setTimeout(async () => {
+            setAnimationState('removing');
+            setShouldRemove(true);
+            await completeChunk(chunk);
+        }, 300); // Total animation time before cleanup
+    };
+
+    // Don't render if marked for removal
+    if (shouldRemove) return null;
+
+    // Animation styles based on state
+    const getAnimationStyles = () => {
+        // If animations are disabled, return no animation styles
+        if (!POP_ANIMATIONS) {
+            return {};
+        }
+
+        const baseTransition = 'transform 0.2s cubic-bezier(0.68, -0.55, 0.265, 1.55), opacity 0.4s ease-in, background-color 0.2s ease-out, box-shadow 0.2s ease-out';
+        
+        switch (animationState) {
+            case 'popping':
+                return {
+                    transform: 'scale(1.15)',
+                    zIndex: 10,
+                    transition: baseTransition
+                };
+            case 'shrinking':
+                return {
+                    transform: 'scale(0.8)',
+                    opacity: 0,
+                    transition: 'transform 0.4s ease-in, opacity 0.4s ease-in, background-color 0.2s ease-out'
+                };
+            case 'removing':
+                return {
+                    transform: 'scale(0)',
+                    opacity: 0,
+                    height: 0,
+                    minHeight: 0,
+                    margin: 0,
+                    padding: 0,
+                    transition: 'all 0.2s ease-in'
+                };
+            default:
+                return {
+                    transition: baseTransition
+                };
+        }
+    };
+
+    // Calculate available height for chunks (56vh total - 4rem header - padding)
+    // 4rem = 64px header height, converted to vh: 64px / window.innerHeight * 100
+    const availableHeightVh = 56 - (64 / window.innerHeight * 100) - 2; // 2vh for padding/margins
+
     return (
         <div
             className="overflow-hidden w-full group rounded-lg flex flex-col relative"
-            style={noBg ? {
-                backgroundColor: "white",
-                border: "2px solid #cdcdcd",
-            } : {
-                height: (isHovered) ? `auto` : `${70 * (chunkHeight / 100)}vh`,
-                minHeight: (isHovered) ? `${70 * (chunkHeight / 100)}vh` : 26,
-                backgroundColor: chunk.task.colorHex,
-                boxShadow: `0 0 0 2px ${chunk.task.colorHex}80`,
+            style={{
+                ...(noBg ? {
+                    backgroundColor: "white",
+                    border: "2px solid #cdcdcd",
+                } : {
+                    height: (isHovered && animationState === 'idle') ? `auto` : `${availableHeightVh * chunkHeight}vh`,
+                    minHeight: (isHovered && animationState === 'idle') ? `${availableHeightVh * chunkHeight}vh` : 26,
+                    backgroundColor: chunk.task.colorHex,
+                    boxShadow: `0 0 0 2px ${chunk.task.colorHex}80`,
+                }),
+                ...getAnimationStyles()
             }}
             onPointerEnter={() => setIsHovered(true)}
             onPointerLeave={() => setIsHovered(false)}
@@ -148,13 +238,11 @@ export function ChunkBlock({ chunk, chunkHeight, complete, noBg }: { chunk: Chun
                     </div>
                 )}
             </div>
-            {!complete && (
+            {!complete && animationState === 'idle' && (
                 <ConfirmationDialog
                     title="Mark as Complete"
                     description="Mark this chunk of your task as complete"
-                    onConfirm={async () => {
-                        await completeChunk(chunk);
-                    }}
+                    onConfirm={handleComplete}
                 >
                     <Button
                         variant={noBg ? "default" : "secondary"}

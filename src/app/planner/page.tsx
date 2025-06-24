@@ -23,9 +23,9 @@ export default function Page() {
           <div className="w-full min-h-screen flex items-center justify-center">
             <WeekCalendar />
           </div>
-          <div className="w-full flex items-center justify-center">
+          {/* <div  className="w-full flex items-center justify-center">
             <CompletedChunksDisplay />
-          </div>
+          </div> */}
         </div>
       </TasksProvider>
     </main>

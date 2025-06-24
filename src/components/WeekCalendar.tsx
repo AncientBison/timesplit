@@ -30,7 +30,7 @@ export default function WeekCalendar() {
     }
 
     return (
-        <div className="w-4/5 m-4 min-w-80 h-7/10 bg-gray-100 rounded-lg shadow-lg">
+        <div className="w-4/5 m-4 min-w-80 min-h-[70vh] bg-gray-100 rounded-lg shadow-lg">
             {/* Header with navigation buttons */}
             <NavigationHeader 
                 selectedWeekOffset={selectedWeekOffset} 
@@ -38,7 +38,7 @@ export default function WeekCalendar() {
             />
 
             {/* Days of the week */}
-            <div className="flex h-11/12 flex-row items-center justify-between p-4">
+            <div className="flex flex-row items-start justify-between p-4 gap-2">
                 {getDaysOfWeek(selectedWeekOffset).map((day, index) => (
                     <DayOfWeek key={day.getTime()} day={day} />
                 ))}
@@ -50,7 +50,7 @@ export default function WeekCalendar() {
 
 function NavigationHeader({ selectedWeekOffset, setSelectedWeekOffset }: { selectedWeekOffset: number, setSelectedWeekOffset: (offset: number) => void }) {
     return (
-        <div className="h-1/12 rounded-tl-lg rounded-tr-lg flex flex-col items-center flex-row justify-end pt-4 pl-4 pr-4 gap-2">
+        <div className="h-16 rounded-tl-lg rounded-tr-lg flex flex-col items-center flex-row justify-end pt-4 pl-4 pr-4 gap-2">
             <Button onClick={() => setSelectedWeekOffset(0)} variant="outline" className="lg:text-xl md:text-lg sm:text-md lg:h-10 md:h-8 sm:h-6">
                 Today
             </Button>
@@ -66,7 +66,7 @@ function NavigationHeader({ selectedWeekOffset, setSelectedWeekOffset }: { selec
 
 function DayOfWeek({ day }: { day: Date }) {
     return (
-        <div className="bg-white flex-1 rounded-lg shadow w-1/7 m-1 h-full">
+        <div className="bg-white flex-1 rounded-lg shadow w-1/7 min-h-[calc(70vh-6rem)] flex flex-col">
             <DayOfWeekHeader day={day} />
             <DayOfWeekChunks day={day} />
         </div>
@@ -75,7 +75,7 @@ function DayOfWeek({ day }: { day: Date }) {
 
 function DayOfWeekHeader({ day }: { day: Date }) {
     return (
-        <div className={`h-1/9 rounded-tl-lg rounded-tr-lg flex flex-col items-center m-0 ${day.getDate() === new Date().getDate() && day.getMonth() === new Date().getMonth() ? "bg-blue-300" : ""}`}>
+        <div className={`h-16 rounded-tl-lg rounded-tr-lg flex flex-col items-center m-0 flex-shrink-0 ${day.getDate() === new Date().getDate() && day.getMonth() === new Date().getMonth() ? "bg-blue-300" : ""}`}>
             <div className="flex flex-col items-center justify-center h-full">
                 <span className="lg:text-lg md:text-[0.75rem] sm:text-[0.5rem] font-semibold">{day.toLocaleDateString('en-US', { weekday: 'long' })}</span>
                 <span className="lg:text-sm md:text-[0.6rem] sm:text-[0.45rem] text-gray-600">{day.toLocaleDateString()}</span>
@@ -92,7 +92,7 @@ function DayOfWeekChunks({ day }: { day: Date }) {
     day.setHours(0, 0, 0, 0); // Normalize the date to midnight for comparison
 
     return (
-        <>
+        <div className="flex flex-col gap-1 p-2 flex-1">
             {chunks.filter(chunk => {
                 const chunkDate = new Date(chunk.date);
                 return chunkDate.getTime() === day.getTime();
@@ -105,11 +105,11 @@ function DayOfWeekChunks({ day }: { day: Date }) {
                                 return chunkDate.getTime() === day.getTime();
                             })
                             .reduce((sum, c) => sum + c.durationMinutes, 0)
-                    ) * 100 * (8/9) // 8/9 to account for header height
+                    ) * 100
                 }/>
             ))
             }
-        </>
+        </div>
     );
 }
 
@@ -125,8 +125,8 @@ export function ChunkBlock({ chunk, chunkHeight, complete, noBg }: { chunk: Chun
                 backgroundColor: "white",
                 border: "2px solid #cdcdcd",
             } : {
-                height: (isHovered) ? `auto` : `${chunkHeight}%`,
-                minHeight: (isHovered) ? `${chunkHeight}%` : 26,
+                height: (isHovered) ? `auto` : `${70 * (chunkHeight / 100)}vh`,
+                minHeight: (isHovered) ? `${70 * (chunkHeight / 100)}vh` : 26,
                 backgroundColor: chunk.task.colorHex,
                 boxShadow: `0 0 0 2px ${chunk.task.colorHex}80`,
             }}
